@@ -149,6 +149,6 @@ int _getStreamInt(AudioManager audioManager) {
     case AudioManager.STREAM_NOTIFICATION:
       return 5;
     default:
-      return null;
+      return 1;
   }
 }
