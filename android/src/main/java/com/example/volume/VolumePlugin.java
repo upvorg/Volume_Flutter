@@ -1,4 +1,3 @@
-
 package com.example.volume;
 
 import android.app.Activity;
@@ -19,20 +18,21 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 /**
  * VolumePlugin
  */
-public class VolumePlugin implements FlutterPlugin, ActivityAware, MethodCallHandler {
+public class VolumePlugin implements FlutterPlugin, MethodCallHandler {
 
     private MethodChannel channel;
-    private Activity activity;
     private AudioManager audioManager;
     private int streamType;
+    private Context context;
 
     /**
      * v2 plugin embedding
      */
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
-        channel = new MethodChannel(
-                        binding.getBinaryMessenger(), "volume");
+        context = binding.getApplicationContext();
+
+        channel = new MethodChannel(binding.getBinaryMessenger(), "volume");
         channel.setMethodCallHandler(this);
     }
 
@@ -42,34 +42,17 @@ public class VolumePlugin implements FlutterPlugin, ActivityAware, MethodCallHan
         channel = null;
     }
 
-    @Override
-    public void onAttachedToActivity(ActivityPluginBinding binding) {
-        activity = binding.getActivity();
-    }
-
-    @Override
-    public void onDetachedFromActivity() {
-        activity = null;
-    }
-
-    @Override
-    public void onReattachedToActivityForConfigChanges(ActivityPluginBinding binding) {
-        activity = binding.getActivity();
-    }
-
-    @Override
-    public void onDetachedFromActivityForConfigChanges() {
-        activity = null;
-    }
-
     /**
      * Deprecated plugin registration.
      */
     public static void registerWith(Registrar registrar) {
-        VolumePlugin instance = new VolumePlugin();
+        /*VolumePlugin instance = new VolumePlugin();
         instance.channel = new MethodChannel(registrar.messenger(), "volume");
         instance.activity = registrar.activity();
-        instance.channel.setMethodCallHandler(instance);
+        instance.channel.setMethodCallHandler(instance);*/
+
+        final MethodChannel channel = new MethodChannel(registrar.messenger(), "volume");
+        channel.setMethodCallHandler(new VolumePlugin());
     }
 
     @Override
@@ -77,7 +60,6 @@ public class VolumePlugin implements FlutterPlugin, ActivityAware, MethodCallHan
         if (call.method.equals("controlVolume")) {
             int i = call.argument("streamType");
             streamType = i;
-            controlVolume(i);
             result.success(null);
         } else if (call.method.equals("getMaxVol")) {
             result.success(getMaxVol());
@@ -93,12 +75,8 @@ public class VolumePlugin implements FlutterPlugin, ActivityAware, MethodCallHan
         }
     }
 
-    private void controlVolume(int i) {
-        this.activity.setVolumeControlStream(i);
-    }
-
     private void initAudioManager() {
-        audioManager = (AudioManager) this.activity.getApplicationContext().getSystemService(Context.AUDIO_SERVICE);
+        audioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
     }
 
     private int getMaxVol() {
