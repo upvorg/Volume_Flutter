@@ -1,14 +1,11 @@
 package com.example.volume;
 
-import android.app.Activity;
 import android.content.Context;
 import android.media.AudioManager;
 
 import androidx.annotation.NonNull;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
-import io.flutter.embedding.engine.plugins.activity.ActivityAware;
-import io.flutter.embedding.engine.plugins.activity.ActivityPluginBinding;
 import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
@@ -46,11 +43,6 @@ public class VolumePlugin implements FlutterPlugin, MethodCallHandler {
      * Deprecated plugin registration.
      */
     public static void registerWith(Registrar registrar) {
-        /*VolumePlugin instance = new VolumePlugin();
-        instance.channel = new MethodChannel(registrar.messenger(), "volume");
-        instance.activity = registrar.activity();
-        instance.channel.setMethodCallHandler(instance);*/
-
         final MethodChannel channel = new MethodChannel(registrar.messenger(), "volume");
         channel.setMethodCallHandler(new VolumePlugin());
     }
